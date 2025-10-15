@@ -30,7 +30,7 @@ There is a module here; https://github.com/hmcts/terraform-module-azure-bastion/
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azapi"></a> [azapi](#provider\_azapi) | 2.7.0 |
+| <a name="provider_azapi"></a> [azapi](#provider\_azapi) | ~> 2.4 |
 
 ## Resources
 
