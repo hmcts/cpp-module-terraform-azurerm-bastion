@@ -1,19 +1,19 @@
 output "id" {
   description = "The ID of the Bastion Host."
-  value       = azapi_resource.bastion.id
+  value       = module.azure_bastion.id
 }
 
 output "name" {
   description = "The name of the Bastion Host."
-  value       = azapi_resource.bastion.name
+  value       = module.azure_bastion.name
 }
 
 output "dns_name" {
   description = "The DNS name of the Bastion Host."
-  value       = azapi_resource.bastion.output.properties.dnsName
+  value       = module.azure_bastion.dns_name
 }
 
 output "ip_configurations" {
   description = "The IP configurations of the Bastion Host."
-  value       = azapi_resource.bastion.output.properties.ipConfigurations
+  value       = module.azure_bastion.ip_configurations
 }
