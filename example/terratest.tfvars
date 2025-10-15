@@ -1,22 +1,9 @@
 nsg = {
-  name = "NS-MDV-BASTION-01"
   custom_rules = [
     # Inbound
     {
-      name                       = "AllowAdminVPNInbound"
-      priority                   = 120
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "443"
-      source_address_prefixes    = ["10.88.112.0/27"]
-      destination_address_prefix = "*"
-      description                = "Allow HTTPS from AdminVPN subnet"
-    },
-    {
       name                       = "AllowGatewayManagerInbound"
-      priority                   = 130
+      priority                   = 100
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
@@ -27,8 +14,20 @@ nsg = {
       description                = "Allow Gateway Manager from Internet"
     },
     {
+      name                       = "AllowAzureCloudInbound"
+      priority                   = 110
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "443"
+      source_address_prefix      = "AzureCloud"
+      destination_address_prefix = "*"
+      description                = "Allow AzureCloud"
+    },
+    {
       name                       = "AllowAzureLoadBalancerInbound"
-      priority                   = 140
+      priority                   = 115
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
@@ -36,11 +35,11 @@ nsg = {
       destination_port_range     = "443"
       source_address_prefix      = "AzureLoadBalancer"
       destination_address_prefix = "*"
-      description                = "Allow Azure Load Balancer from Internet"
+      description                = "Allow Azure platform management traffic"
     },
     {
-      name                       = "AllowBastionHostCommunication"
-      priority                   = 150
+      name                       = "AllowBastionHostCommunicationInbound"
+      priority                   = 120
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "*"
@@ -49,18 +48,6 @@ nsg = {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "VirtualNetwork"
       description                = "Allow Bastion Host Communication within VNet"
-    },
-    {
-      name                       = "Deny_All_Inbound"
-      priority                   = 4096
-      direction                  = "Inbound"
-      access                     = "Deny"
-      protocol                   = "*"
-      source_port_range          = "*"
-      destination_port_range     = "*"
-      source_address_prefixes    = ["0.0.0.0/0"]
-      destination_address_prefix = "*"
-      description                = "Default deny from all"
     },
     # Outbound
     {
@@ -88,7 +75,7 @@ nsg = {
       description                = "Allow HTTPS to AzureCloud"
     },
     {
-      name                       = "AllowBastionCommunication"
+      name                       = "AllowBastionCommunicationOutbound"
       priority                   = 120
       direction                  = "Outbound"
       access                     = "Allow"
@@ -98,30 +85,6 @@ nsg = {
       source_address_prefix      = "VirtualNetwork"
       destination_address_prefix = "VirtualNetwork"
       description                = "Allow Bastion Communication within VNet"
-    },
-    {
-      name                       = "AllowHttpOutbound"
-      priority                   = 130
-      direction                  = "Outbound"
-      access                     = "Allow"
-      protocol                   = "*"
-      source_port_range          = "*"
-      destination_port_range     = "80"
-      source_address_prefix      = "*"
-      destination_address_prefix = "Internet"
-      description                = "Allow HTTP to Internet"
-    },
-    {
-      name                       = "Deny_All_Outbound"
-      priority                   = 4096
-      direction                  = "Outbound"
-      access                     = "Deny"
-      protocol                   = "*"
-      source_port_range          = "*"
-      destination_port_range     = "*"
-      source_address_prefixes    = ["0.0.0.0/0"]
-      destination_address_prefix = "*"
-      description                = "Default deny to all"
     }
   ]
 }

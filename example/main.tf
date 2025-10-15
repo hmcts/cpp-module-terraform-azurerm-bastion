@@ -29,11 +29,12 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_subnet" "bastion" {
-  name                 = "AzureBastionSubnet"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+module "subnet_bastion" {
+  source                   = "github.com/hmcts/cpp-module-terraform-azurerm-subnet.git?ref=4.x"
+  subnet_name              = "AzureBastionSubnet"
+  core_resource_group_name = azurerm_resource_group.rg.name
+  virtual_network_name     = azurerm_virtual_network.vnet.name
+  subnet_address_prefixes  = ["10.0.1.0/24"]
 }
 
 module "nsg_bastion" {
@@ -43,18 +44,23 @@ module "nsg_bastion" {
   security_group_name = "nsg-${random_pet.suffix.id}"
   custom_rules        = var.nsg.custom_rules
   tags                = {}
-  subnet_id           = azurerm_subnet.bastion.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "bastion" {
+  subnet_id                 = module.subnet_bastion.id
+  network_security_group_id = module.nsg_bastion.network_security_group_id
 }
 
 module "azure_bastion" {
-  source = "../"
+  source     = "../"
+  depends_on = [azurerm_subnet_network_security_group_association.bastion]
 
   location           = azurerm_resource_group.rg.location
   name               = "bastion-${random_pet.suffix.id}"
   copy_paste_enabled = true
   file_copy_enabled  = true
   ip_configuration = {
-    subnet_id        = azurerm_subnet.bastion.id
+    subnet_id        = module.subnet_bastion.id
     create_public_ip = false
   }
   ip_connect_enabled        = true

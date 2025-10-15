@@ -11,7 +11,6 @@ variable "location" {
 
 variable "nsg" {
   type = object({
-    name = string
     custom_rules = list(object({
       name                       = string
       priority                   = number
