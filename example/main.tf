@@ -36,31 +36,14 @@ resource "azurerm_subnet" "bastion" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-resource "azurerm_network_security_group" "nsg" {
-  name                = "nsg-${random_pet.suffix.id}"
-  location            = azurerm_resource_group.rg.location
+module "nsg_bastion" {
+  source              = "git::https://github.com/hmcts/cpp-module-terraform-azurerm-network-security-group.git?ref=main"
   resource_group_name = azurerm_resource_group.rg.name
-
-  dynamic "security_rule" {
-    for_each = var.nsg.custom_rules
-    content {
-      name                       = security_rule.value.name
-      priority                   = security_rule.value.priority
-      direction                  = security_rule.value.direction
-      access                     = security_rule.value.access
-      protocol                   = security_rule.value.protocol
-      source_port_range          = security_rule.value.source_port_range
-      destination_port_range     = security_rule.value.destination_port_range
-      source_address_prefix      = lookup(security_rule.value, "source_address_prefix", null)
-      source_address_prefixes    = lookup(security_rule.value, "source_address_prefixes", null)
-      destination_address_prefix = security_rule.value.destination_address_prefix
-    }
-  }
-}
-
-resource "azurerm_subnet_network_security_group_association" "bastion" {
-  subnet_id                 = azurerm_subnet.bastion.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+  location            = azurerm_resource_group.rg.location
+  security_group_name = "nsg-${random_pet.suffix.id}"
+  custom_rules        = var.nsg.custom_rules
+  tags                = {}
+  subnet_id           = azurerm_subnet.bastion.id
 }
 
 module "azure_bastion" {
