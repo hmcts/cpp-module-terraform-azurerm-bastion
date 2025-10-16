@@ -46,9 +46,20 @@ module "nsg_bastion" {
   tags                = {}
 }
 
+# Adding this as its taking sometime for rules to take effect and failing with rules not sutable for bastion subnet err.
+resource "null_resource" "sleep_after_nsg_assoc" {
+  depends_on = [module.nsg_bastion]
+
+  provisioner "local-exec" {
+    command = "sleep 20"
+  }
+}
+
 resource "azurerm_subnet_network_security_group_association" "bastion" {
   subnet_id                 = module.subnet_bastion.id
   network_security_group_id = module.nsg_bastion.network_security_group_id
+
+  depends_on = [null_resource.sleep_after_nsg_assoc]
 }
 
 module "azure_bastion" {

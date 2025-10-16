@@ -17,7 +17,7 @@ func TestTerraformBastion(t *testing.T) {
 	}
 
 	// Defer the destroy to cleanup all created resources
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	// This will init and apply the resources and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
